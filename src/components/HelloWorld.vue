@@ -1,51 +1,64 @@
 <template>
   <v-container>
+    <!-- one way binding -->
     <h2>{{ title }}</h2>
-
-    <v-text-field label="Enter your name:" v-model="name" @keydown.enter="changeFlag" :disabled="flag"></v-text-field>
-
-    <p>Hello: {{ name }}</p>
-
     <v-row>
-      <v-col cols="9">
-        <v-text-field label="What will you do" v-model="todo"></v-text-field>
-      </v-col>
-      <v-col cols="3">
-        <v-text-field label="How long it will take" v-model="duration"></v-text-field>
+      <v-col cols="12">
+        <div>
+          <v-text-field label="Enter your name : " v-model="name" @keydown.enter="changeFlag"
+            :disabled="flag"></v-text-field>
+          Hello : {{ name }}
+        </div>
       </v-col>
     </v-row>
 
-    <div>
-      <v-btn @click="add">Add To Do List</v-btn>
-    </div>
+    <!-- two way binding -->
+    <v-row>
+      <v-col cols="9">
+        <v-text-field label="WHAT WILL YOU DO" v-model="todo"></v-text-field>
+      </v-col>
+      <v-col cols="3">
+        <v-text-field label="HOW LONG IT WILL TAKE" v-model="duration"></v-text-field>
+      </v-col>
+    </v-row>
 
-    <div>
-      <v-table>
-        <thead>
-          <tr>
-            <th class="text-left">No.</th>
-            <th class="text-left">TODO</th>
-            <th class="text-left">Duration</th>
-            <th class="text-left">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in todolist" :key="item.id">
-            <td>{{ item.id }}</td>
-            <td>{{ item.todo }}</td>
-            <td>{{ item.duration }} hr(s)</td>
-            <td>
-              <v-btn color="error" @click="deleteItem(item.id)" small>Delete</v-btn>
-            </td>
-          </tr>
-        </tbody>
-      </v-table>
-    </div>
+    <v-row>
+      <v-col cols="2">
+        <v-btn @click="add" prepend-icon="mdi-pen-plus"></v-btn>
+      </v-col>
+      <v-col cols="1">
+        <v-btn @click="remove">DELETE</v-btn>
+      </v-col>
+    </v-row>
+
+    <!-- to-do list display -->
+    <v-table>
+      <thead>
+        <tr>
+          <th class="text-left">NO</th>
+          <th class="text-left">TODO</th>
+          <th class="text-left">DURATION</th>
+          <th class="text-left">Remark</th>
+          <th class="text-left">ACTION</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in todolist" :key="item.id">
+          <td>{{ item.id }}</td>
+          <td>{{ item.todo }}</td>
+          <td>{{ item.duration }} hr(s)</td>
+          <td v-if="item.duration > 0.75">Lafy</td>
+          <td v-else>Active</td>
+          <td><v-btn @click="removeItem(item)" prepend-icon="mdi-delete-variant"></v-btn></td>
+        </tr>
+      </tbody>
+    </v-table>
   </v-container>
 </template>
+
 <script>
 export default {
-  name: 'HelloWorld',
+  name: "HelloWorld",
 
   data: () => ({
     title: "This is my first vue project.",
@@ -53,32 +66,61 @@ export default {
     flag: false,
     todo: "",
     duration: "",
+
     todolist: [
-      { id: 1, todo: 'OJT', duration: 3 },
-      { id: 2, todo: 'clean the house', duration: 0.5 },
-    ]
+      {
+        id: 1,
+        todo: "Attend To OJT Class",
+        duration: 3,
+      },
+      {
+        id: 2,
+        todo: "Clean the House",
+        duration: 0.5,
+      },
+    ],
   }),
 
   methods: {
+    generateId() {
+      return this.todolist[this.todolist.length - 1].id + 1;
+    },
+
     add() {
-      if (this.todo && this.duration > 0) {
+      if (this.todo && this.duration) {
         this.todolist.push({
-          id: this.todolist.length > 0 ? Math.max(...this.todolist.map(t => t.id)) + 1 : 1,
+          id: this.generateId(),
           todo: this.todo,
-          duration: this.duration
+          duration: parseFloat(this.duration),
         });
         this.todo = "";
         this.duration = "";
-      } else {
-        alert("Please enter both task and duration!");
       }
-    },
-    deleteItem(id) {
-      this.todolist = this.todolist.filter(item => item.id !== id);
     },
     changeFlag() {
       this.flag = !this.flag;
-    }
-  }
+    },
+    async remove() {
+      console.log("one");
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          console.log("two");
+          resolve();
+        }, 5000);
+      });
+      console.log("three")
+    },
+
+  },
+  removeItem(item) {
+    this.todolist = this.todolist.filter((todo) => todo.id !== item.id);
+  },
+ async created() {
+await new Promise((resolve) => {
+        setTimeout(() => {
+          this.title="This is my first vue project";  resolve();
+        }, 5000);
+      });    },
 }
+
 </script>
